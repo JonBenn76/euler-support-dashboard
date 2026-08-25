@@ -1,0 +1,4 @@
+{
+    "duckdb.databases": [],
+    "duckdb.defaultDatabase": "support_dashboard"
+}
