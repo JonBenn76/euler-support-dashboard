@@ -14,11 +14,11 @@ function App() {
   const [trends, setTrends] = useState({ build_duration: [], projects: [], status_distribution: [], client_success_failure: [], daily_success_failure: [] });
   const [clientsList, setClientsList] = useState([]);
   const [selectedProfile, setSelectedProfile] = useState(null);
-  
+
   // Filters
   const [clientFilter, setClientFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
-  
+
   const getPastDate = (days) => {
     const d = new Date();
     d.setDate(d.getDate() - days);
@@ -27,7 +27,7 @@ function App() {
 
   const [dateFrom, setDateFrom] = useState(getPastDate(7));
   const [dateTo, setDateTo] = useState('');
-  
+
   // Drill-down
   const [expandedEventId, setExpandedEventId] = useState(null);
 
@@ -68,14 +68,14 @@ function App() {
       if (statusFilter !== 'all') queryParams.append('status', statusFilter);
       if (dateFrom) queryParams.append('date_from', `${dateFrom}T00:00:00`);
       if (dateTo) queryParams.append('date_to', `${dateTo}T23:59:59`);
-      
+
       const queryStr = queryParams.toString();
 
       if (activeTab === 'overview' || activeTab === 'analytics') {
         const mRes = await fetch(`${API_URL}/metrics?${queryStr}`);
         if (mRes.ok) setMetrics(await mRes.json());
       }
-      
+
       if (activeTab === 'overview' || activeTab === 'analytics') {
         const tRes = await fetch(`${API_URL}/trends?${queryStr}`);
         if (tRes.ok) setTrends(await tRes.json());
@@ -104,7 +104,7 @@ function App() {
     setClientFilter(clientName);
     setActiveTab('analytics');
   };
-  
+
   const handleProfileClick = async (clientId) => {
     try {
       const response = await fetch(`${API_URL}/clients/${clientId}`);
@@ -122,7 +122,7 @@ function App() {
     setModalType(type);
     setActiveClient(client);
     setNewTokenResult(null);
-    
+
     if (type === 'edit' && client) {
       setFormData({
         client_name: client.client_name,
@@ -146,7 +146,7 @@ function App() {
     } else if (type === 'token') {
       setFormData({ ...formData, token_lifespan_days: 365, never_expire: false });
     }
-    
+
     setIsModalOpen(true);
   };
 
@@ -175,7 +175,7 @@ function App() {
         const data = await res.json();
         setNewTokenResult(data.api_token);
         fetchClients();
-      } 
+      }
       else if (modalType === 'edit') {
         const payload = {
           account_manager: formData.account_manager,
@@ -215,10 +215,10 @@ function App() {
   return (
     <div className="dashboard-container">
       <header className="header" style={{ marginBottom: '24px' }}>
-        <h1>Support Command Centre</h1>
+        <h1>Euler Support Command Centre</h1>
       </header>
 
-      <Navigation 
+      <Navigation
         activeTab={activeTab} setActiveTab={setActiveTab}
         clientsList={clientsList}
         clientFilter={clientFilter} setClientFilter={setClientFilter}
@@ -235,13 +235,13 @@ function App() {
             <div className="metric-label">Filtered Events</div>
           </div>
           <div className="glass-panel">
-            <div className="metric-value" style={{color: 'var(--error)'}}>{metrics.stats.total_failures}</div>
+            <div className="metric-value" style={{ color: 'var(--error)' }}>{metrics.stats.total_failures}</div>
             <div className="metric-label">Filtered Failures</div>
           </div>
           <div className="glass-panel">
-            <div className="metric-value" style={{color: 'var(--success)'}}>
-              {metrics.stats.total_events > 0 
-                ? Math.round(((metrics.stats.total_events - metrics.stats.total_failures) / metrics.stats.total_events) * 100) 
+            <div className="metric-value" style={{ color: 'var(--success)' }}>
+              {metrics.stats.total_events > 0
+                ? Math.round(((metrics.stats.total_events - metrics.stats.total_failures) / metrics.stats.total_events) * 100)
                 : 100}%
             </div>
             <div className="metric-label">Success Rate</div>
@@ -251,9 +251,9 @@ function App() {
 
       <div className="grid">
         <div className="glass-panel" style={{ gridColumn: '1 / -1', display: 'flex', flexDirection: 'column' }}>
-          
+
           {activeTab === 'overview' && (
-            <LiveOverview 
+            <LiveOverview
               metrics={metrics}
               trends={trends}
               handleClientDrilldown={handleClientDrilldown}
@@ -263,7 +263,7 @@ function App() {
           )}
 
           {activeTab === 'analytics' && (
-            <TrendsAnalytics 
+            <TrendsAnalytics
               clientFilter={clientFilter}
               trends={trends}
               hiddenProjects={hiddenProjects}
@@ -273,7 +273,7 @@ function App() {
           )}
 
           {activeTab === 'profiles' && (
-            <ClientProfiles 
+            <ClientProfiles
               clientsList={clientsList}
               selectedProfile={selectedProfile}
               setSelectedProfile={setSelectedProfile}
@@ -285,7 +285,7 @@ function App() {
           )}
 
           {activeTab === 'admin' && (
-            <ClientAdmin 
+            <ClientAdmin
               clientsList={clientsList}
               openModal={openModal}
             />
@@ -303,11 +303,11 @@ function App() {
               {modalType === 'edit' && `Edit Profile: ${activeClient?.client_name}`}
               {modalType === 'token' && `Regenerate Token: ${activeClient?.client_name}`}
             </h2>
-            
+
             {newTokenResult ? (
               <div>
-                <p style={{marginBottom: '16px', color: 'var(--success)'}}>
-                  Success! Here is the new API Token. <br/><br/>
+                <p style={{ marginBottom: '16px', color: 'var(--success)' }}>
+                  Success! Here is the new API Token. <br /><br />
                   <strong>IMPORTANT: Copy this now. You will not be able to see it again!</strong>
                 </p>
                 <div className="token-box">
@@ -322,15 +322,15 @@ function App() {
                 {modalType === 'add' && (
                   <div className="form-group">
                     <label>Client Name</label>
-                    <input required type="text" value={formData.client_name} onChange={e => setFormData({...formData, client_name: e.target.value})} />
+                    <input required type="text" value={formData.client_name} onChange={e => setFormData({ ...formData, client_name: e.target.value })} />
                   </div>
                 )}
-                
+
                 {(modalType === 'add' || modalType === 'edit') && (
                   <>
                     <div className="form-group">
                       <label>Contract Status</label>
-                      <select value={formData.contract_status} onChange={e => setFormData({...formData, contract_status: e.target.value})}>
+                      <select value={formData.contract_status} onChange={e => setFormData({ ...formData, contract_status: e.target.value })}>
                         <option value="Active">Active</option>
                         <option value="Premium Active">Premium Active</option>
                         <option value="Expired">Expired</option>
@@ -339,52 +339,52 @@ function App() {
                     </div>
                     <div className="form-group">
                       <label>Account Manager</label>
-                      <input type="text" value={formData.account_manager} onChange={e => setFormData({...formData, account_manager: e.target.value})} />
+                      <input type="text" value={formData.account_manager} onChange={e => setFormData({ ...formData, account_manager: e.target.value })} />
                     </div>
                     <div className="form-group">
                       <label>Lead Developer</label>
-                      <input type="text" value={formData.lead_developer} onChange={e => setFormData({...formData, lead_developer: e.target.value})} />
+                      <input type="text" value={formData.lead_developer} onChange={e => setFormData({ ...formData, lead_developer: e.target.value })} />
                     </div>
 
-                    <div className="form-group" style={{marginTop: '16px'}}>
-                      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <div className="form-group" style={{ marginTop: '16px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <label>Key Contacts</label>
-                        <button 
-                          type="button" 
-                          className="btn-secondary" 
-                          style={{padding: '4px 8px', fontSize: '0.75rem'}}
-                          onClick={() => setFormData({...formData, key_contacts: [...formData.key_contacts, {name: '', role: '', email: ''}]})}
+                        <button
+                          type="button"
+                          className="btn-secondary"
+                          style={{ padding: '4px 8px', fontSize: '0.75rem' }}
+                          onClick={() => setFormData({ ...formData, key_contacts: [...formData.key_contacts, { name: '', role: '', email: '' }] })}
                         >
                           + Add Contact
                         </button>
                       </div>
-                      
+
                       {formData.key_contacts && formData.key_contacts.map((contact, idx) => (
-                        <div key={idx} style={{display: 'flex', gap: '8px', marginBottom: '8px', background: 'rgba(0,0,0,0.1)', padding: '8px', borderRadius: '4px', border: '1px solid var(--glass-border)'}}>
-                           <input type="text" placeholder="Name" value={contact.name} onChange={e => {
-                             const newContacts = [...formData.key_contacts];
-                             newContacts[idx].name = e.target.value;
-                             setFormData({...formData, key_contacts: newContacts});
-                           }} style={{flex: 1}}/>
-                           <input type="text" placeholder="Role" value={contact.role} onChange={e => {
-                             const newContacts = [...formData.key_contacts];
-                             newContacts[idx].role = e.target.value;
-                             setFormData({...formData, key_contacts: newContacts});
-                           }} style={{flex: 1}}/>
-                           <input type="email" placeholder="Email" value={contact.email} onChange={e => {
-                             const newContacts = [...formData.key_contacts];
-                             newContacts[idx].email = e.target.value;
-                             setFormData({...formData, key_contacts: newContacts});
-                           }} style={{flex: 1.5}}/>
-                           <button type="button" className="btn-secondary" style={{padding: '4px 8px'}} onClick={() => {
-                             const newContacts = [...formData.key_contacts];
-                             newContacts.splice(idx, 1);
-                             setFormData({...formData, key_contacts: newContacts});
-                           }}>X</button>
+                        <div key={idx} style={{ display: 'flex', gap: '8px', marginBottom: '8px', background: 'rgba(0,0,0,0.1)', padding: '8px', borderRadius: '4px', border: '1px solid var(--glass-border)' }}>
+                          <input type="text" placeholder="Name" value={contact.name} onChange={e => {
+                            const newContacts = [...formData.key_contacts];
+                            newContacts[idx].name = e.target.value;
+                            setFormData({ ...formData, key_contacts: newContacts });
+                          }} style={{ flex: 1 }} />
+                          <input type="text" placeholder="Role" value={contact.role} onChange={e => {
+                            const newContacts = [...formData.key_contacts];
+                            newContacts[idx].role = e.target.value;
+                            setFormData({ ...formData, key_contacts: newContacts });
+                          }} style={{ flex: 1 }} />
+                          <input type="email" placeholder="Email" value={contact.email} onChange={e => {
+                            const newContacts = [...formData.key_contacts];
+                            newContacts[idx].email = e.target.value;
+                            setFormData({ ...formData, key_contacts: newContacts });
+                          }} style={{ flex: 1.5 }} />
+                          <button type="button" className="btn-secondary" style={{ padding: '4px 8px' }} onClick={() => {
+                            const newContacts = [...formData.key_contacts];
+                            newContacts.splice(idx, 1);
+                            setFormData({ ...formData, key_contacts: newContacts });
+                          }}>X</button>
                         </div>
                       ))}
                       {(!formData.key_contacts || formData.key_contacts.length === 0) && (
-                        <span style={{fontSize: '0.8rem', color: 'var(--text-secondary)'}}>No contacts added.</span>
+                        <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>No contacts added.</span>
                       )}
                     </div>
                   </>
@@ -393,12 +393,12 @@ function App() {
                 {(modalType === 'add' || modalType === 'token') && (
                   <div className="form-group">
                     <label>Token Lifespan</label>
-                    <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
-                      <select 
-                        disabled={formData.never_expire} 
-                        value={formData.token_lifespan_days} 
-                        onChange={e => setFormData({...formData, token_lifespan_days: e.target.value})}
-                        style={{flex: 1}}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <select
+                        disabled={formData.never_expire}
+                        value={formData.token_lifespan_days}
+                        onChange={e => setFormData({ ...formData, token_lifespan_days: e.target.value })}
+                        style={{ flex: 1 }}
                       >
                         <option value={30}>30 Days</option>
                         <option value={60}>60 Days</option>
@@ -406,13 +406,13 @@ function App() {
                         <option value={120}>120 Days</option>
                         <option value={365}>365 Days (1 Year)</option>
                       </select>
-                      
-                      <label style={{display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', margin: 0}}>
-                        <input 
-                          type="checkbox" 
-                          style={{width: 'auto'}}
+
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', margin: 0 }}>
+                        <input
+                          type="checkbox"
+                          style={{ width: 'auto' }}
                           checked={formData.never_expire}
-                          onChange={e => setFormData({...formData, never_expire: e.target.checked})}
+                          onChange={e => setFormData({ ...formData, never_expire: e.target.checked })}
                         />
                         Never Expire
                       </label>

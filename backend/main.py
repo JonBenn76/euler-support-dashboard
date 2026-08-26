@@ -5,9 +5,9 @@ import secrets
 import uuid
 
 import duckdb
-from ai_agent import get_diagnostics
-from database import get_db_conn, init_db
-from query_builder import render_query
+from backend.ai_agent import get_diagnostics
+from backend.database import get_db_conn, init_db
+from backend.query_builder import render_query
 from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel

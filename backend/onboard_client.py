@@ -2,7 +2,7 @@ import secrets
 import sys
 import uuid
 
-from database import get_connection
+from backend.database import get_connection
 
 
 def onboard_client(client_name: str):
